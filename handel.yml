@@ -1,0 +1,22 @@
+version: 1
+
+name: homeAPI
+
+environments:
+  dev:
+    webapp:
+      type: apigateway
+      description: Home API creates device shadows for your smart devices. Then links them together so you can create common actions.
+      swagger: ./swagger.yml
+      tags:
+        project: homeAPI
+      dependencies:
+        - rooms
+    rooms:
+      type: dynamodb
+      partition_key:
+        name: uuid
+        type: String
+      provisioned_throughput:
+        read_capacity_units: 1
+        write_capacity_units: 1
