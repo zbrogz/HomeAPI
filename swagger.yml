@@ -7,6 +7,7 @@ info:
 basePath: /dev
 schemes:
   - https
+#Should work but doesn't, so you need to put on all methods
 security:
   - api_key: []
 paths:
@@ -67,6 +68,24 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-lambda-function: get-room
+    delete:
+      description: Delete a room
+      security:
+        - api_key: []
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Delete Message
+          schema:
+            message:
+              description: Message
+              type: string
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: delete-room
 securityDefinitions:
   api_key:
     type: apiKey
@@ -114,5 +133,10 @@ x-lambda-functions:
   get-room:
     runtime: python3.6
     handler: get_room.lambda_handler
+    memory: 128
+    path_to_code: ./rooms
+  delete-room:
+    runtime: python3.6
+    handler: delete_room.lambda_handler
     memory: 128
     path_to_code: ./rooms
