@@ -20,7 +20,7 @@ def get_all_rooms():
     return rooms
 
 def lambda_handler(event, context):
-    print(" Starting Get Room Lambda Function")
+    print(" Starting Get Rooms Lambda Function")
     
     rooms = get_all_rooms()
     

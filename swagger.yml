@@ -50,7 +50,23 @@ paths:
         400:
           description: Error
       x-lambda-function: get-rooms
-
+  /rooms/{roomID}:
+    get:
+      description: Get a room
+      security:
+        - api_key: []
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A room
+          schema:
+            $ref: '#/definitions/Room'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: get-room
 securityDefinitions:
   api_key:
     type: apiKey
@@ -75,6 +91,12 @@ definitions:
       name:
         type: string
         description: Name of the room
+      created_at:
+        type: string
+        description: Time Room was created
+      updated_at:
+        type: string
+        description: Time Room was last updated
 
 #Lambda Functions
   
@@ -87,5 +109,10 @@ x-lambda-functions:
   get-rooms:
     runtime: python3.6
     handler: get_rooms.lambda_handler
+    memory: 128
+    path_to_code: ./rooms
+  get-room:
+    runtime: python3.6
+    handler: get_room.lambda_handler
     memory: 128
     path_to_code: ./rooms
