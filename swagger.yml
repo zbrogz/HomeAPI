@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: '0.1'
+  version: '1.0'
   title: Home API
   description: An api to add smart devices to your home and control them
 #host: ????
@@ -15,7 +15,6 @@ paths:
       description: Adds a new room to your home
       security:
         - api_key: []
-      x-amazon-apigateway-request-validator: all
       consumes:
         - application/json
       produces:
@@ -25,6 +24,7 @@ paths:
           name: name
           description: Name of room to be added to the home
           type: string
+      x-lambda-function: create-room
       responses:
         200:
           description: A room
@@ -34,7 +34,6 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: create-room
     get:
       description: Gets a list of all rooms in your home
       security:
@@ -50,24 +49,22 @@ paths:
               $ref: '#/definitions/Room'
         400:
           description: Error
-          schema:
-            $ref: '#/definitions/Error'
       x-lambda-function: get-rooms
+
 securityDefinitions:
   api_key:
     type: apiKey
     name: x-api-key
     in: header
-#Object Definitions
+
+
 definitions:
   Error:
-    type: object
+    description: Error Message
     properties:
-      code:
-        type: integer
-        format: int32
-      message:
+      errorMessage:
         type: string
+        description: Description of the error message.
   Room:
     description: A room is a way to organize devices in your home api.
     type: object
@@ -78,14 +75,8 @@ definitions:
       name:
         type: string
         description: Name of the room
-#Request Validators
-x-amazon-apigateway-request-validators:
-  all:
-    validateRequestBody: true
-    validateRequestParameters: true
-  params-only:
-    validateRequestBody: true
-    validateRequestParameters: true
+
+#Lambda Functions
   
 x-lambda-functions: 
   create-room:

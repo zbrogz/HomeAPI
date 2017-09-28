@@ -15,29 +15,25 @@ def lambda_handler(event, context):
     nowtime = datetime.now().strftime('%x-%X')
     print("UID is "+uid)
     
-    if not 'name' in eventBody:
+    if 'name' in eventBody:
+        room = {
+            'uuid': uid,
+            'name': eventBody['name'],
+            'created_at': nowtime,
+            'updated_at': nowtime
+        }
+        room_table.put_item(Item=room)
+        response = {
+            "isBase64Encoded": "false",
+            "statusCode": 200,
+            "body": json.dumps(room)
+        }
+    else:
         response = {
             "isBase64Encoded": "false",
             "statusCode": 400,
-            "body": "{\"message\": \"Invalid paramters.\"}"
+            "body": "{\"errorMessage\": \"Invalid Parameters: Missing name\"}"
         }
-        #raise Exception("Missing or invalid paramters.")
-        return json.dumps(response)
-
-    room = {
-        'uuid': uid,
-        'name': eventBody['name'],
-        'created_at': nowtime,
-        'updated_at': nowtime
-    }
-
-    room_table.put_item(Item=room)
-
-    response = {
-        "isBase64Encoded": "false",
-        "statusCode": 200,
-        "body": json.dumps(room)
-    }
 
     
     return response
