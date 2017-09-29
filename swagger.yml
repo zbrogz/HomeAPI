@@ -22,7 +22,7 @@ paths:
         - application/json
       parameters:
         - in: body
-          name: name
+          name: roomName
           description: Name of room to be added to the home
           type: string
       x-lambda-function: create-room
@@ -68,6 +68,31 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-lambda-function: get-room
+    patch:
+      description: Update Room
+      security:
+        - api_key: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: roomName
+          description: Name of room to be added to the home
+          type: string
+      resonses:
+        200:
+          description: Updated Room
+          schema:
+            message:
+              description: Message
+              type: string
+        400:
+          descrition: Error
+          schema:
+            $ref: '#definitions/Error'
+      x-lambda-function: update-room
     delete:
       description: Delete a room
       security:
@@ -107,7 +132,7 @@ definitions:
       room_id:
         type: string
         description: Unique identifier attached to the room.
-      name:
+      roomName:
         type: string
         description: Name of the room
       created_at:
@@ -138,5 +163,10 @@ x-lambda-functions:
   delete-room:
     runtime: python3.6
     handler: delete_room.lambda_handler
+    memory: 128
+    path_to_code: ./rooms
+  update-room:
+    runtime: python3.6
+    handler: update_room.lambda_handler
     memory: 128
     path_to_code: ./rooms
