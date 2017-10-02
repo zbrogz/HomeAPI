@@ -111,6 +111,132 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-lambda-function: delete-room
+
+#Devices
+  /rooms/{roomID}/devices:
+    get:
+      description: Returns a list of all devices in a room
+      security:
+        - api_key: []
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A list of devices
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Device'
+      x-lambda-function: get-devices
+    post:
+      description: Add a new device to a specific room
+      security:
+        - api_key: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      requestBody:
+        description: Device to be added to API
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#definitions/Device'
+      responses:
+        200:
+          description: Device Details
+          schema:
+            $ref: '#definitions/Device'
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#definitions/Error'
+      x-lambda-function: create-device
+  /devices:
+    get:
+      description: Returns a list of all devices
+      security:
+        - api_key: []
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A list of devices
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Device'
+      x-lambda-function: get-devices
+    post:
+      description: Add a device that does not belong to a room
+      security:
+        - api_key: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      requestBody:
+        description: Device to be added to API
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#definitions/Device'
+      responses:
+        200:
+          description: Device Details
+          schema:
+            $ref: '#definitions/Device'
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#definitions/Error'
+      x-lambda-function: create-device
+  /devices/{deviceID}:
+    get:
+      description: Get a device
+      security:
+        - api_key: []
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A room
+          schema:
+            $ref: '#/definitions/Device'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: get-device
+    patch:
+      description: Update device name and location. (To update parameters need to delete and re-add)
+      security:
+        - api_key: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      requestBody:
+        description: Device to be updated to API. (Only name, type, and room)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#definitions/Device'
+      responses:
+        200:
+          description: Device Details
+          schema:
+            $ref: '#definitions/Device'
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#definitions/Error'
+      x-lambda-function: update-device
+
+
 securityDefinitions:
   api_key:
     type: apiKey
@@ -131,7 +257,7 @@ definitions:
     properties:
       room_id:
         type: string
-        description: Unique identifier attached to the room.
+        description: Unique identifier of the the room.
       roomName:
         type: string
         description: Name of the room
@@ -141,10 +267,33 @@ definitions:
       updated_at:
         type: string
         description: Time Room was last updated
+  Device:
+    description: A device to be shadowed by API
+    type: object
+    properties:
+      device_id:
+        type: string
+        description: Unique identifier of the device, not required on create
+        required: false
+      room_id:
+        type: string
+        description: Room where device is located, can be blank which means it does not belong to a room.
+        required: false
+      deviceName:
+        type: string
+        description: Name to identify the device
+      deviceType:
+        type: string
+        description: General type of device (thermostat, light, lock, etc.)
+      devicePath:
+        type: string
+        description: Path where device can obtain its properties
+        required: false
 
 #Lambda Functions
   
-x-lambda-functions: 
+x-lambda-functions:
+  #rooms 
   create-room:
     runtime: python3.6
     handler: create_room.lambda_handler
@@ -170,3 +319,24 @@ x-lambda-functions:
     handler: update_room.lambda_handler
     memory: 128
     path_to_code: ./rooms
+  #devices
+  create-device:
+    runtime: python3.6
+    handler: create_device.lambda_handler
+    memory: 128
+    path_to_code: ./devices
+  update-device:
+    runtime: python3.6
+    handler: update_device.lambda_handler
+    memory: 128
+    path_to_code: ./devices
+  get-device:
+    runtime: python3.6
+    handler: get_device.lambda_handler
+    memory: 128
+    path_to_code: ./devices
+  get-devices:
+    runtime: python3.6
+    handler: get_devices.lambda_handler
+    memory: 128
+    path_to_code: ./devices

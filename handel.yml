@@ -12,7 +12,16 @@ environments:
         project: homeAPI
       dependencies:
         - rooms
+        - devices
     rooms:
+      type: dynamodb
+      partition_key:
+        name: uuid
+        type: String
+      provisioned_throughput:
+        read_capacity_units: 1
+        write_capacity_units: 1
+    devices:
       type: dynamodb
       partition_key:
         name: uuid
