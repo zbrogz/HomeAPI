@@ -13,6 +13,7 @@ environments:
       dependencies:
         - rooms
         - devices
+        - parameters
     rooms:
       type: dynamodb
       partition_key:
@@ -29,3 +30,12 @@ environments:
       provisioned_throughput:
         read_capacity_units: 1
         write_capacity_units: 1
+    parameters:
+      type: dynamodb
+      partition_key:
+        name: uuid
+        type: String
+      provisioned_throughput:
+        read_capacity_units: 1
+        write_capacity_units: 1
+            

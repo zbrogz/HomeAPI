@@ -14,7 +14,7 @@ def delete_room(uuid):
 
     
 def lambda_handler(event, context):
-  print("Starting Get Room Lambda Function")
+  print("Starting Delete Room Lambda Function")
   
   if event['pathParameters'] and 'roomID' in event['pathParameters']:
     uuid = event['pathParameters']['roomID']
