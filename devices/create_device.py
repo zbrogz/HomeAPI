@@ -15,6 +15,7 @@ def create_parameters(parameters, deviceID):
       return False
   
   nowtime = datetime.now().strftime('%x-%X')
+  newParams = []
   with parameters_table.batch_writer() as batch:
     for parameter in parameters:
       uid = uuid().hex
@@ -28,7 +29,8 @@ def create_parameters(parameters, deviceID):
         'updated_at': nowtime
       }
       batch.put_item(Item=paramItem)
-  return True
+      newParams.append(paramItem)
+  return newParams
 
 def lambda_handler(event, context):
     print("Starting Create Device Lambda Function")
@@ -65,9 +67,11 @@ def lambda_handler(event, context):
         
         if 'parameters' in inDevice:
           #verify parameters before you create device
-          if create_parameters(inDevice['parameters'],uid):
+          params = create_parameters(inDevice['parameters'],uid)
+          if params:
             device_table.put_item(Item=device)
             device['path'] = "/devices/"+uid
+            device['parameters'] = params
             
             response = {
                 "isBase64Encoded": "false",
