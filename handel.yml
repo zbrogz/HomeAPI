@@ -15,6 +15,7 @@ environments:
         - devices
         - parameters
         - actions
+        - conditions
     rooms:
       type: dynamodb
       partition_key:
@@ -47,5 +48,11 @@ environments:
       provisioned_throughput:
         read_capacity_units: 1
         write_capacity_units: 1
-
-        
+    conditions:
+      type: dynamodb
+      partition_key:
+        name: uuid
+        type: String
+      provisioned_throughput:
+        read_capacity_units: 1
+        write_capacity_units: 1

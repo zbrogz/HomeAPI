@@ -432,6 +432,80 @@ paths:
             $ref: '#/definitions/Error'
       x-lambda-function: delete-action    
 
+  #Conditions
+  /conditions:
+    post:
+      description: Create a new conditions
+      security:
+        - api_key: []
+      requestBody:
+        description: Condition to be created.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#definitions/Condition'
+      responses:
+        200:
+          description: Condition Details
+          schema:
+            $ref: '#definitions/Condition'
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#definitions/Error'
+      x-lambda-function: create-condition
+    get:
+      description: Returns a list of all conditions
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: A list of conditions
+          schema:
+            type: array
+            items:
+              $ref: '#definitions/Condition'
+      x-lambda-function: get-conditions
+  /conditions/{conditionID}:
+    get:
+      description: Get a condition
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: A condition
+          schema:
+            $ref: '#/definitions/Condition'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: get-condition
+    patch:
+      description: Update Condition.
+      security:
+        - api_key: []
+      requestBody:
+        description: Condition to be updated. Include only the attributes you want updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#definitions/Condition'
+      responses:
+        200:
+          description: Update Message
+          schema:
+            message:
+              description: Message
+              type: string
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#definitions/Error'
+      x-lambda-function: update-condition
+
 securityDefinitions:
   api_key:
     type: apiKey
@@ -535,6 +609,28 @@ definitions:
       paramValue:
         type: string
         description: The new value that should be set for the parameter.
+  Condition:
+    description: A If This than That condition that fires an action. If the paramValue (compare) to comparision value is true, it will fire the action.
+    properties:
+      uuid: 
+        type: string
+        description: Condition ID
+      conditionName:
+        type: string
+        description: Name of the condition
+      paramID:
+        type: string
+        description: Parameter to watch
+      comparision:
+        type: string
+        description: How to compare the parameter to the comparision value (>,<,=) >,< only work with number types.
+      comparisionValue:
+        type: string
+        description: Value to compare the parameter to. (Can be true or false.)
+      actionID:
+        type: string
+        description: Action to fire when comparision returns true.
+
       
       
 #Lambda Functions
@@ -638,3 +734,24 @@ x-lambda-functions:
     handler: fire_action.lambda_handler
     memory: 128
     path_to_code: ./actions
+  #conditions
+  create-condition:
+    runtime: python3.6
+    handler: create_condition.lambda_handler
+    memory: 128
+    path_to_code: ./conditions
+  get-condition:
+    runtime: python3.6
+    handler: get_condition.lambda_handler
+    memory: 128
+    path_to_code: ./conditions
+  get-conditions:
+    runtime: python3.6
+    handler: get_conditions.lambda_handler
+    memory: 128
+    path_to_code: ./conditions
+  update-condition:
+    runtime: python3.6
+    handler: get_conditions.lambda_handler
+    memory: 128
+    path_to_code: ./conditions
