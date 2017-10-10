@@ -207,7 +207,32 @@ paths:
           schema:
             $ref: '#definitions/Error'
       x-lambda-function: update-device
+    post:
+      description: Updates device parameters. Only include the parameters that you want to update. Only need to include uuid and parmValue for each parameter.
+      security:
+        - api_key: []
+      requestBody:
+        description: Array of parameter ids and new values
+        schema:
+          type: Array
+          items:
+            $ref: '#definitions/Parameter'
+      responses:
+        200:
+          description: Update Message
+          schema:
+            message:
+              description: Update message
+              type: string
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#definitions/Error'
+      x-lambda-function: update-device-parameters
     delete:
+      description: Deletes a device and all of its parameters
+      security:
+        - api_key: []
       responses:
         200:
           description: Delete Message
@@ -220,6 +245,192 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-lambda-function: delete-device
+  #Parameters
+  /parameters/{paramID}:
+    get:
+      description: Get a parameter value.
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: A parameter
+          schema:
+            $ref: '#/definitions/Parameter'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: get-parameter
+    patch:
+      description: Update a parameters value
+      security:
+        - api_key: []
+      parameters:
+        - in: body
+          name: paramValue
+          description: New value of the parameter
+          type: string
+      responses:
+        200:
+          description: Update Message
+          schema:
+            message:
+              description: Message
+              type: string
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: update-parameter      
+  /devices/{deviceID}/parameters/{paramID}:
+    get:
+      description: Get a parameter value
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: A parameter
+          schema:
+            $ref: '#/definitions/Parameter'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: get-parameter
+    patch:
+      description: Update a parameters value
+      security:
+        - api_key: []
+      parameters:
+        - in: body
+          name: paramValue
+          description: New value of the parameter
+          type: string
+      responses:
+        200:
+          description: Update Message
+          schema:
+            message:
+              description: Message
+              type: string
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: update-parameter
+  #Actions
+  /actions:
+    post:
+      description: Add a new action
+      security:
+        - api_key: []
+      requestBody:
+        description: Action details to be added.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#definitions/Action'
+      responses:
+        200:
+          description: Action Details
+          schema:
+            $ref: '#definitions/Action'
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#definitions/Error'
+      x-lambda-function: create-action
+    get:
+      description: Returns a list of all actions
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: A list of actions
+          schema:
+            type: array
+            items:
+              $ref: '#definitions/Action'
+      x-lambda-function: get-actions
+  /actions/{actionID}:
+    get:
+      description: Get an action
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: An action
+          schema:
+            $ref: '#/definitions/Action'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: get-action
+    patch:
+      description: Update action name or commands. Must include all action commands. This will delete all old commands and replace with what is given.
+      security:
+        - api_key: []
+      requestBody:
+        description: Action to be updated. Action Name and Commands
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#definitions/Action'
+      responses:
+        200:
+          description: Update Message
+          schema:
+            message:
+              description: Message
+              type: string
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#definitions/Error'
+      x-lambda-function: update-action
+    post:
+      description: Fire the action. Will execute all of the action commands, updating the parameters.
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: Executin Message
+          schema:
+            message:
+              description: Message
+              type: string
+        400:
+          description: Invalid Parameters
+          schema:
+            $ref: '#definitions/Error'
+      x-lambda-function: fire-action
+    delete:
+      description: Deletes an action
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: Delete Message
+          schema:
+            message:
+              description: Message
+              type: string
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: delete-action    
 
 securityDefinitions:
   api_key:
@@ -239,7 +450,7 @@ definitions:
     description: A room is a way to organize devices in your home api.
     type: object
     properties:
-      room_id:
+      uuid:
         type: string
         description: Unique identifier of the the room.
       roomName:
@@ -255,14 +466,12 @@ definitions:
     description: A device to be shadowed by API
     type: object
     properties:
-      device_id:
+      uuid:
         type: string
         description: Unique identifier of the device, not required on create
-        required: false
       room_id:
         type: string
         description: Room where device is located, can be blank which means it does not belong to a room.
-        required: false
       deviceName:
         type: string
         description: Name to identify the device
@@ -272,7 +481,6 @@ definitions:
       devicePath:
         type: string
         description: Path where device can obtain its properties
-        required: false
       parameters:
         type: array
         items:
@@ -282,6 +490,10 @@ definitions:
     description: A parameter that a device either reads from, or writes to.
     type: object
     properties:
+      uuid:
+        type: string
+        description: Parameter ID
+        required: true
       paramName:
         type: string
         description: Name of the parameter
@@ -296,8 +508,35 @@ definitions:
         required: true
       paramValue:
         type: string
-        description: Value of the parameter. Always a string, but can be converted to bool/string by consumer.
+        description: Value of the parameter. Always a string, but can be converted to bool/string by consumer. Only given when reading devise or parameter. C
+          can give it when updating values. Ignored on creating and updated device.
         rerquired: false
+  Action:
+    description: A action that can be fired to update device parameters.
+    type: object
+    properties:
+      uuid:
+        type: string
+        description: Action ID
+      actionName:
+        type: string
+        description: Name of Action
+      actionCommands:
+        type: array
+        items:
+          schema:
+            $ref: '#definitions/ActionCommand'
+  ActionCommand:
+    description: A command that is executed by an action
+    properties:
+      paramID: 
+        type: string
+        description: A paramID of a device that should be set to a new value.
+      paramValue:
+        type: string
+        description: The new value that should be set for the parameter.
+      
+      
 #Lambda Functions
   
 x-lambda-functions:
@@ -352,4 +591,50 @@ x-lambda-functions:
     runtime: python3.6
     handler: delete_device.lambda_handler
     memory: 128
-    path_to_code: ./devices  
+    path_to_code: ./devices
+  update-device-parameters:
+    runtime: python3.6
+    handler: update_dev_params.lambda_handler
+    memory: 128
+    path_to_code: ./parameters
+  get-parameter:
+    runtime: python3.6
+    handler: get_parameter.lambda_handler
+    memory: 128
+    path_to_code: ./parameters
+  update-parameter:
+    runtime: python3.6
+    handler: update_parameter.lambda_handler
+    memory: 128
+    path_to_code: ./parameters
+  #actions
+  create-action:
+    runtime: python3.6
+    handler: create_action.lambda_handler
+    memory: 128
+    path_to_code: ./actions
+  get-action:
+    runtime: python3.6
+    handler: get_action.lambda_handler
+    memory: 128
+    path_to_code: ./actions
+  get-actions:
+    runtime: python3.6
+    handler: get_actions.lambda_handler
+    memory: 128
+    path_to_code: ./actions
+  delete-action:
+    runtime: python3.6
+    handler: delete_action.lambda_handler
+    memory: 128
+    path_to_code: ./actions
+  update-action:
+    runtime: python3.6
+    handler: update_action.lambda_handler
+    memory: 128
+    path_to_code: ./actions
+  fire-action:
+    runtime: python3.6
+    handler: fire_action.lambda_handler
+    memory: 128
+    path_to_code: ./actions

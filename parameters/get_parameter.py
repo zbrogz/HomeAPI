@@ -5,13 +5,11 @@ from boto3.dynamodb.conditions import Key
 #Incase you need the Attr as well.
 #from boto3.dynamodb.conditions import Key, Attr
 
-def get_room(uuid):
-  print("Getting Room")
-  table_name = os.environ['ROOMS_TABLE_NAME']
-  rooms_table = boto3.resource('dynamodb').Table(table_name)
+def get_parameter(uuid):
+  table_name = os.environ['PARAMETERS_TABLE_NAME']
+  parameters_table = boto3.resource('dynamodb').Table(table_name)
     
-  response = rooms_table.query(KeyConditionExpression=Key('uuid').eq(uuid))
-  print("Rooms: "+str(len(response['Items'])))
+  response = parameters_table.query(KeyConditionExpression=Key('uuid').eq(uuid))
   if len(response['Items'])==1:
     return response['Items'][0]
   else:
@@ -20,21 +18,21 @@ def get_room(uuid):
 def lambda_handler(event, context):
   print("Starting Get Room Lambda Function")
   
-  if event['pathParameters'] and 'roomID' in event['pathParameters']:
-    uuid = event['pathParameters']['roomID']
-    print("UUID: "+uuid)
-    room = get_room(uuid)
-    if room == None:
+  if event['pathParameters'] and 'paramID' in event['pathParameters']:
+    paramID = event['pathParameters']['paramID']
+    print("ParamID: "+paramID)
+    parameter = get_parameter(paramID)
+    if parameter == None or ('deviceID' in event['pathParameters'] and event['pathParameters']['deviceID'] != parameter['deviceID']):
       response = {
           "isBase64Encoded": "false",
           "statusCode": 404,
-          "body": "{\"errorMessage\": \"Room not found.\"}"
+          "body": "{\"errorMessage\": \"Parameter not found.\"}"
       }
     else:
       response = {
           "isBase64Encoded": "false",
           "statusCode": 200,
-          "body": json.dumps(room)
+          "body": json.dumps(parameter)
       }
   else:
     response = {

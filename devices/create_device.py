@@ -11,7 +11,7 @@ def create_parameters(parameters, deviceID):
   parameters_table = boto3.resource('dynamodb').Table(table_name)
   
   for parameter in parameters:
-    if not ('paramName' in parameter and 'paramType' in parameter and 'paramType' in parameter and 'paramActions' in parameter):
+    if not ('paramName' in parameter and 'paramType' in parameter and 'paramActions' in parameter):
       return False
   
   nowtime = datetime.now().strftime('%x-%X')

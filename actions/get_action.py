@@ -5,36 +5,35 @@ from boto3.dynamodb.conditions import Key
 #Incase you need the Attr as well.
 #from boto3.dynamodb.conditions import Key, Attr
 
-def get_room(uuid):
-  print("Getting Room")
-  table_name = os.environ['ROOMS_TABLE_NAME']
-  rooms_table = boto3.resource('dynamodb').Table(table_name)
+def get_action(uuid):
+  print("Getting Action")
+  table_name = os.environ['ACTIONS_TABLE_NAME']
+  actions_table = boto3.resource('dynamodb').Table(table_name)
     
-  response = rooms_table.query(KeyConditionExpression=Key('uuid').eq(uuid))
-  print("Rooms: "+str(len(response['Items'])))
+  response = actions_table.query(KeyConditionExpression=Key('uuid').eq(uuid))
+  print("Actions: "+str(len(response['Items'])))
   if len(response['Items'])==1:
     return response['Items'][0]
   else:
     return None
     
 def lambda_handler(event, context):
-  print("Starting Get Room Lambda Function")
+  print("Starting Get Action Lambda Function")
   
-  if event['pathParameters'] and 'roomID' in event['pathParameters']:
-    uuid = event['pathParameters']['roomID']
-    print("UUID: "+uuid)
-    room = get_room(uuid)
-    if room == None:
+  if event['pathParameters'] and 'actionID' in event['pathParameters']:
+    uuid = event['pathParameters']['actionID']
+    action = get_action(uuid)
+    if action == None:
       response = {
           "isBase64Encoded": "false",
           "statusCode": 404,
-          "body": "{\"errorMessage\": \"Room not found.\"}"
+          "body": "{\"errorMessage\": \"Action not found.\"}"
       }
     else:
       response = {
           "isBase64Encoded": "false",
           "statusCode": 200,
-          "body": json.dumps(room)
+          "body": json.dumps(action)
       }
   else:
     response = {
@@ -44,4 +43,3 @@ def lambda_handler(event, context):
     }
   
   return response
-  
