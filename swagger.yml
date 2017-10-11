@@ -25,7 +25,6 @@ paths:
           name: roomName
           description: Name of room to be added to the home
           type: string
-      x-lambda-function: create-room
       responses:
         200:
           description: A room
@@ -35,6 +34,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/Error'
+      x-lambda-function: rooms
     get:
       description: Gets a list of all rooms in your home
       security:
@@ -48,7 +48,7 @@ paths:
               $ref: '#/definitions/Room'
         400:
           description: Error
-      x-lambda-function: get-rooms
+      x-lambda-function: rooms
   /rooms/{roomID}:
     get:
       description: Get a room
@@ -63,7 +63,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: get-room
+      x-lambda-function: rooms
     patch:
       description: Update Room
       security:
@@ -84,7 +84,7 @@ paths:
           descrition: Error
           schema:
             $ref: '#definitions/Error'
-      x-lambda-function: update-room
+      x-lambda-function: rooms
     delete:
       description: Delete a room
       security:
@@ -100,7 +100,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: delete-room
+      x-lambda-function: rooms
 
 #Devices
   /rooms/{roomID}/devices:
@@ -504,7 +504,8 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#definitions/Error'
-      x-lambda-function: update-condition
+      #TODO: should be condition but too many lambdas.
+      x-lambda-function: update-device
 
 securityDefinitions:
   api_key:
@@ -637,24 +638,14 @@ definitions:
   
 x-lambda-functions:
   #rooms 
-  create-room:
+  rooms:
     runtime: python3.6
-    handler: create_room.lambda_handler
+    handler: rooms.lambda_handler
     memory: 128
     path_to_code: ./rooms
   get-rooms:
     runtime: python3.6
     handler: get_rooms.lambda_handler
-    memory: 128
-    path_to_code: ./rooms
-  get-room:
-    runtime: python3.6
-    handler: get_room.lambda_handler
-    memory: 128
-    path_to_code: ./rooms
-  delete-room:
-    runtime: python3.6
-    handler: delete_room.lambda_handler
     memory: 128
     path_to_code: ./rooms
   update-room:
@@ -746,11 +737,6 @@ x-lambda-functions:
     memory: 128
     path_to_code: ./conditions
   get-conditions:
-    runtime: python3.6
-    handler: get_conditions.lambda_handler
-    memory: 128
-    path_to_code: ./conditions
-  update-condition:
     runtime: python3.6
     handler: get_conditions.lambda_handler
     memory: 128
