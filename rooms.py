@@ -1,5 +1,6 @@
-import os
+from utilities import ParameterException, get_table_ref
 import boto3
+import os
 import json
 from datetime import datetime
 from uuid import uuid4 as uuid
@@ -8,7 +9,7 @@ from boto3.dynamodb.conditions import Key
 #Action Methods
 
 def create_room(roomData):
-  print("Starting Create Room Lambda Function")
+  print("Creating Room")
   uid = uuid().hex
   nowtime = datetime.now().strftime('%x-%X')
   print("UID is "+uid)
@@ -101,6 +102,9 @@ def update_room(roomID,roomData):
 
 #Helper Methods 
 
+def rooms_table():
+  return get_table_ref("ROOMS")
+
 def get_roomID(event):
   if event['pathParameters'] and 'roomID' in event['pathParameters']:
     return event['pathParameters']['roomID']
@@ -110,15 +114,10 @@ def get_roomID(event):
 def load_room(uuid):
   print("Getting Room")
   response = rooms_table().query(KeyConditionExpression=Key('uuid').eq(uuid))
-  print("Rooms: "+str(len(response['Items'])))
   if len(response['Items'])==1:
     return response['Items'][0]
   else:
     return None
-
-def rooms_table():
-  table_name = os.environ['ROOMS_TABLE_NAME']
-  return boto3.resource('dynamodb').Table(table_name)
 
 def lambda_handler(event, context):
   print("Starting Rooms Lambda Function")
@@ -145,6 +144,3 @@ def lambda_handler(event, context):
     }
     return response
     
-  
-class ParameterException(Exception):
-  pass

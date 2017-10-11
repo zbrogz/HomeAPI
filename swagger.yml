@@ -115,7 +115,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Device'
-      x-lambda-function: get-devices
+      x-lambda-function: devices
     post:
       description: Add a new device to a specific room
       security:
@@ -136,7 +136,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#definitions/Error'
-      x-lambda-function: create-device
+      x-lambda-function: devices
   /devices:
     get:
       description: Returns a list of all devices
@@ -149,7 +149,7 @@ paths:
             type: array
             items:
               $ref: '#definitions/Device'
-      x-lambda-function: get-devices
+      x-lambda-function: devices
     post:
       description: Add a device that does not belong to a room
       security:
@@ -170,7 +170,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#definitions/Error'
-      x-lambda-function: create-device
+      x-lambda-function: devices    
   /devices/{deviceID}:
     get:
       description: Get a device
@@ -185,7 +185,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: get-device
+      x-lambda-function: devices
     patch:
       description: Update device name and location. (To update parameters need to delete and re-add)
       security:
@@ -206,7 +206,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#definitions/Error'
-      x-lambda-function: update-device
+      x-lambda-function: devices
     post:
       description: Updates device parameters. Only include the parameters that you want to update. Only need to include uuid and parmValue for each parameter.
       security:
@@ -228,7 +228,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#definitions/Error'
-      x-lambda-function: update-device-parameters
+      x-lambda-function: parameters
     delete:
       description: Deletes a device and all of its parameters
       security:
@@ -244,7 +244,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: delete-device
+      x-lambda-function: devices
   #Parameters
   /parameters/{paramID}:
     get:
@@ -260,7 +260,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: get-parameter
+      x-lambda-function: parameters
     patch:
       description: Update a parameters value
       security:
@@ -285,7 +285,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: update-parameter      
+      x-lambda-function: parameters     
   /devices/{deviceID}/parameters/{paramID}:
     get:
       description: Get a parameter value
@@ -300,7 +300,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: get-parameter
+      x-lambda-function: parameters
     patch:
       description: Update a parameters value
       security:
@@ -325,7 +325,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: update-parameter
+      x-lambda-function: parameters
   #Actions
   /actions:
     post:
@@ -348,7 +348,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#definitions/Error'
-      x-lambda-function: create-action
+      x-lambda-function: actions
     get:
       description: Returns a list of all actions
       security:
@@ -360,7 +360,7 @@ paths:
             type: array
             items:
               $ref: '#definitions/Action'
-      x-lambda-function: get-actions
+      x-lambda-function: actions
   /actions/{actionID}:
     get:
       description: Get an action
@@ -375,7 +375,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: get-action
+      x-lambda-function: actions
     patch:
       description: Update action name or commands. Must include all action commands. This will delete all old commands and replace with what is given.
       security:
@@ -398,7 +398,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#definitions/Error'
-      x-lambda-function: update-action
+      x-lambda-function: actions
     post:
       description: Fire the action. Will execute all of the action commands, updating the parameters.
       security:
@@ -414,7 +414,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#definitions/Error'
-      x-lambda-function: fire-action
+      x-lambda-function: actions
     delete:
       description: Deletes an action
       security:
@@ -430,7 +430,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: delete-action    
+      x-lambda-function: actions    
 
   #Conditions
   /conditions:
@@ -454,7 +454,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#definitions/Error'
-      x-lambda-function: create-condition
+      x-lambda-function: conditions
     get:
       description: Returns a list of all conditions
       security:
@@ -466,7 +466,7 @@ paths:
             type: array
             items:
               $ref: '#definitions/Condition'
-      x-lambda-function: get-conditions
+      x-lambda-function: conditions
   /conditions/{conditionID}:
     get:
       description: Get a condition
@@ -481,7 +481,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/Error'
-      x-lambda-function: get-condition
+      x-lambda-function: conditions
     patch:
       description: Update Condition.
       security:
@@ -504,8 +504,7 @@ paths:
           description: Invalid Parameters
           schema:
             $ref: '#definitions/Error'
-      #TODO: should be condition but too many lambdas.
-      x-lambda-function: update-device
+      x-lambda-function: conditions
 
 securityDefinitions:
   api_key:
@@ -642,102 +641,28 @@ x-lambda-functions:
     runtime: python3.6
     handler: rooms.lambda_handler
     memory: 128
-    path_to_code: ./rooms
-  get-rooms:
-    runtime: python3.6
-    handler: get_rooms.lambda_handler
-    memory: 128
-    path_to_code: ./rooms
-  update-room:
-    runtime: python3.6
-    handler: update_room.lambda_handler
-    memory: 128
-    path_to_code: ./rooms
+    path_to_code: ./
   #devices
-  create-device:
+  devices:
     runtime: python3.6
-    handler: create_device.lambda_handler
+    handler: devices.lambda_handler
     memory: 128
-    path_to_code: ./devices
-  update-device:
-    runtime: python3.6
-    handler: update_device.lambda_handler
-    memory: 128
-    path_to_code: ./devices
-  get-device:
-    runtime: python3.6
-    handler: get_device.lambda_handler
-    memory: 128
-    path_to_code: ./devices
-  get-devices:
-    runtime: python3.6
-    handler: get_devices.lambda_handler
-    memory: 128
-    path_to_code: ./devices
-  delete-device:
-    runtime: python3.6
-    handler: delete_device.lambda_handler
-    memory: 128
-    path_to_code: ./devices
-  update-device-parameters:
+    path_to_code: ./
+  #TODO: Fix the following when I create the python code
+  parameters:
     runtime: python3.6
     handler: update_dev_params.lambda_handler
     memory: 128
     path_to_code: ./parameters
-  get-parameter:
-    runtime: python3.6
-    handler: get_parameter.lambda_handler
-    memory: 128
-    path_to_code: ./parameters
-  update-parameter:
-    runtime: python3.6
-    handler: update_parameter.lambda_handler
-    memory: 128
-    path_to_code: ./parameters
   #actions
-  create-action:
+  actions:
     runtime: python3.6
     handler: create_action.lambda_handler
     memory: 128
     path_to_code: ./actions
-  get-action:
-    runtime: python3.6
-    handler: get_action.lambda_handler
-    memory: 128
-    path_to_code: ./actions
-  get-actions:
-    runtime: python3.6
-    handler: get_actions.lambda_handler
-    memory: 128
-    path_to_code: ./actions
-  delete-action:
-    runtime: python3.6
-    handler: delete_action.lambda_handler
-    memory: 128
-    path_to_code: ./actions
-  update-action:
-    runtime: python3.6
-    handler: update_action.lambda_handler
-    memory: 128
-    path_to_code: ./actions
-  fire-action:
-    runtime: python3.6
-    handler: fire_action.lambda_handler
-    memory: 128
-    path_to_code: ./actions
   #conditions
-  create-condition:
+  conditions:
     runtime: python3.6
     handler: create_condition.lambda_handler
-    memory: 128
-    path_to_code: ./conditions
-  get-condition:
-    runtime: python3.6
-    handler: get_condition.lambda_handler
-    memory: 128
-    path_to_code: ./conditions
-  get-conditions:
-    runtime: python3.6
-    handler: get_conditions.lambda_handler
     memory: 128
     path_to_code: ./conditions
