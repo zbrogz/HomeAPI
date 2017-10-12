@@ -143,4 +143,11 @@ def lambda_handler(event, context):
         "body": "{\"errorMessage\": \""+e.args[1]+".\"}"
     }
     return response
+  except json.JSONDecodeError as e:
+    response = {
+        "isBase64Encoded": "false",
+        "statusCode": 400,
+        "body": "{\"errorMessage\": \"Malformed JSON: "+e.args[0]+"\"}"
+    }
+    return response
     
