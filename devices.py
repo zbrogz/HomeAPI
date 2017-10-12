@@ -254,7 +254,7 @@ def lambda_handler(event, context):
           return get_room_devices(event['pathParameters']['roomID'])
         else:
           return get_all_devices()
-    if event['httpMethod'] == "POST":
+    elif event['httpMethod'] == "POST":
       roomID = event['pathParameters']['roomID'] if event['pathParameters'] and 'roomID' in event['pathParameters'] else None
       return create_device(json.loads(event['body']),roomID)
     elif event['httpMethod'] == "DELETE":

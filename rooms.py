@@ -128,7 +128,7 @@ def lambda_handler(event, context):
         return get_room(roomID)
       else:
         return get_rooms()
-    if event['httpMethod'] == "POST":
+    elif event['httpMethod'] == "POST":
       return create_room(json.loads(event['body']))
     elif event['httpMethod'] == "DELETE":
       roomID = get_roomID(event)

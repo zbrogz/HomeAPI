@@ -583,7 +583,7 @@ definitions:
       paramValue:
         type: string
         description: Value of the parameter. Always a string, but can be converted to bool/string by consumer. Only given when reading devise or parameter. C
-          can give it when updating values. Ignored on creating and updated device.
+          can give it when updating values. Ignored on creating and updated device. Make sure number values are a string.
         rerquired: false
   Action:
     description: A action that can be fired to update device parameters.
@@ -648,12 +648,12 @@ x-lambda-functions:
     handler: devices.lambda_handler
     memory: 128
     path_to_code: ./
-  #TODO: Fix the following when I create the python code
   parameters:
     runtime: python3.6
-    handler: update_dev_params.lambda_handler
+    handler: parameters.lambda_handler
     memory: 128
-    path_to_code: ./parameters
+    path_to_code: ./
+  #TODO: Fix the following when I create the python code
   #actions
   actions:
     runtime: python3.6
