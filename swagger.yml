@@ -653,14 +653,14 @@ x-lambda-functions:
     handler: parameters.lambda_handler
     memory: 128
     path_to_code: ./
-  #TODO: Fix the following when I create the python code
   #actions
   actions:
     runtime: python3.6
-    handler: create_action.lambda_handler
+    handler: actions.lambda_handler
     memory: 128
-    path_to_code: ./actions
+    path_to_code: ./
   #conditions
+  #TODO: Fix the following when I create the python code
   conditions:
     runtime: python3.6
     handler: create_condition.lambda_handler
