@@ -505,6 +505,22 @@ paths:
           schema:
             $ref: '#definitions/Error'
       x-lambda-function: conditions
+    delete:
+      description: Deletes a condition
+      security:
+        - api_key: []
+      responses:
+        200:
+          description: Delete Message
+          schema:
+            message:
+              description: Message
+              type: string
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+      x-lambda-function: conditions
 
 securityDefinitions:
   api_key:
@@ -621,10 +637,10 @@ definitions:
       paramID:
         type: string
         description: Parameter to watch
-      comparision:
+      comparison:
         type: string
         description: How to compare the parameter to the comparision value (>,<,=) >,< only work with number types.
-      comparisionValue:
+      comparisonValue:
         type: string
         description: Value to compare the parameter to. (Can be true or false.)
       actionID:
@@ -660,9 +676,8 @@ x-lambda-functions:
     memory: 128
     path_to_code: ./
   #conditions
-  #TODO: Fix the following when I create the python code
   conditions:
     runtime: python3.6
-    handler: create_condition.lambda_handler
+    handler: conditions.lambda_handler
     memory: 128
-    path_to_code: ./conditions
+    path_to_code: ./
