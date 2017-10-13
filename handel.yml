@@ -40,6 +40,9 @@ environments:
       provisioned_throughput:
         read_capacity_units: 1
         write_capacity_units: 1
+      stream_view_type: NEW_IMAGE
+      event_consumers:
+        - service_name: parameter-watcher
     actions:
       type: dynamodb
       partition_key:
@@ -56,3 +59,12 @@ environments:
       provisioned_throughput:
         read_capacity_units: 1
         write_capacity_units: 1
+    parameter-watcher:
+      type: lambda
+      path_to_code: ./
+      handler: parameter_watcher.lambda_handler
+      runtime: python3.6
+      dependencies:
+        - parameters
+        - conditions
+        - actions
