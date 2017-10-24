@@ -21,7 +21,7 @@ def create_condition(conditionData):
     raise ParameterException(400, "Invalid Parameters: Missing comparisonValue")
   
   uid = uuid().hex
-  nowtime = datetime.now().strftime('%x-%X')
+  nowtime = datetime.now().isoformat()
   condition = {
       'uuid': uid,
       'actionID': conditionData['actionID'],
@@ -96,7 +96,7 @@ def update_condition(conditionID,conditionData):
   
   #update time
   updateExpressions.append("updated_at = :u")
-  attributeValues[':u'] = datetime.now().strftime('%x-%X')
+  attributeValues[':u'] = datetime.now().isoformat()
   
   updateExpressionStr = "set "+(",".join(updateExpressions))
   

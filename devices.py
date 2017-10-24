@@ -20,7 +20,7 @@ def create_device(deviceData,roomID):
       raise ParameterException(400, "Invalid Parameter: Missing parameters")
     
     uid = uuid().hex
-    nowtime = datetime.now().strftime('%x-%X')
+    nowtime = datetime.now().isoformat()
     device = {
         'uuid': uid,
         'roomID': roomID,
@@ -111,7 +111,7 @@ def update_device(deviceID, deviceData):
     if not deviceID:
       raise ParameterException(404, "Missing Device ID")
     
-    nowtime = datetime.now().strftime('%x-%X')
+    nowtime = datetime.now().isoformat()
     updateExpressions=[]
     attributeValues={}
     if 'deviceName' in deviceData:
@@ -132,7 +132,7 @@ def update_device(deviceID, deviceData):
     
     #update time
     updateExpressions.append("updated_at = :u")
-    attributeValues[':u'] = datetime.now().strftime('%x-%X')
+    attributeValues[':u'] = datetime.now().isoformat()
     
     updateExpressionStr = "set "+(",".join(updateExpressions))
     
@@ -190,7 +190,7 @@ def create_parameters(parameters, deviceID):
       raise ParameterException(400, "Invalid Parameter: Device Parameters do not include all required fields. Need paramName, paramType, paramActions")
   
   parameters_table = get_table_ref('PARAMETERS')
-  nowtime = datetime.now().strftime('%x-%X')
+  nowtime = datetime.now().isoformat()
   newParams = []
   with parameters_table.batch_writer() as batch:
     for parameter in parameters:

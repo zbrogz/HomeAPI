@@ -18,7 +18,7 @@ def create_action(actionData):
       raise ParameterException(400, "Invalid actionCommand: missing paramID or paramValue")
   
   uid = uuid().hex
-  nowtime = datetime.now().strftime('%x-%X')  
+  nowtime = datetime.now().isoformat()  
   action = {
       'uuid': uid,
       'actionName': actionData['actionName'],
@@ -102,7 +102,7 @@ def update_action(actionID, actionData):
   
   #update time
   updateExpressions.append("updated_at = :u")
-  attributeValues[':u'] = datetime.now().strftime('%x-%X')
+  attributeValues[':u'] = datetime.now().isoformat()
   
   updateExpressionStr = "set "+(",".join(updateExpressions))
   result = actions_table().update_item(
@@ -147,7 +147,7 @@ def validateParamters(parameters):
   return True
 
 def update_parameters(params):
-  nowtime = datetime.now().strftime('%x-%X')
+  nowtime = datetime.now().isoformat()
   
   for parameter in params:
       params_table().update_item(

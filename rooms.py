@@ -11,7 +11,7 @@ from boto3.dynamodb.conditions import Key
 def create_room(roomData):
   print("Creating Room")
   uid = uuid().hex
-  nowtime = datetime.now().strftime('%x-%X')
+  nowtime = datetime.now().isoformat()
   print("UID is "+uid)
   
   if 'roomName' in roomData:
@@ -87,7 +87,7 @@ def update_room(roomID,roomData):
   if not 'roomName' in roomData:
     raise ParameterException(400, "Invalid Parameters: Missing roomName")
   
-  nowtime = datetime.now().strftime('%x-%X')
+  nowtime = datetime.now().isoformat()
   
   result = rooms_table().update_item(
             Key={'uuid': roomID},
