@@ -17,8 +17,17 @@ def create_condition(conditionData):
     raise ParameterException(400, "Invalid Parameters: Missing paramID")
   if not 'comparison' in conditionData:
     raise ParameterException(400, "Invalid Parameters: Missing comparison")
-  if not 'comparisonValue' in conditionData:
-    raise ParameterException(400, "Invalid Parameters: Missing comparisonValue")
+  if not 'comparisonType' in conditionData:
+    conditionData['comparisonType'] = 'static'
+    
+  #Make sure condition makes sense
+  if conditionData['comparisonType'] == 'dynamic':
+    if not 'comparisonParameter' in conditionData:
+      raise ParameterException(400, "Invalid Parameters: Missing comparisonParameter for dynamic comparison")
+  else:
+    conditionData['comparisonType'] = 'static' #make sure it isn't another value
+    if not 'comparisonValue' in conditionData:
+      raise ParameterException(400, "Invalid Parameters: Missing comparisonValue for static comparison")
   
   uid = uuid().hex
   nowtime = datetime.now().isoformat()
@@ -28,10 +37,15 @@ def create_condition(conditionData):
       'conditionName': conditionData['conditionName'],
       'paramID': conditionData['paramID'],
       'comparison': conditionData['comparison'],
-      'comparisonValue': conditionData['comparisonValue'],
+      'comparisonType': conditionData['comparisonType'],
       'created_at': nowtime,
       'updated_at': nowtime
-  }    
+  }
+  if conditionData['comparisonType'] == 'dynamic':
+    condition['comparisonParameter'] = conditionData['comparisonParameter']
+  else:
+    condition['comparisonValue'] = conditionData['comparisonValue']
+  
   conditions_table().put_item(Item=condition)
 
   response = {
@@ -88,7 +102,13 @@ def update_condition(conditionID,conditionData):
     attributeValues[':c'] = conditionData['comparison']
   if 'comparisonValue' in conditionData:
     updateExpressions.append("comparisonValue = :v")
-    attributeValues[':v'] = conditionData['comparisonValue']      
+    attributeValues[':v'] = conditionData['comparisonValue']   
+  if 'comparisonType' in conditionData:
+    updateExpressions.append("comparisonType = :t")
+    attributeValues[':t'] = conditionData['comparisonType']
+  if 'comparisonParameter' in conditionData:  
+    updateExpressions.append("comparisonParameter = :t")
+    attributeValues[':t'] = conditionData['comparisonParameter']
     
   if len(updateExpressions) < 1:
     #error if not updating anything
