@@ -20,13 +20,19 @@ def find_relevant_conditions(paramID):
 
 
 def test_condition(condition,paramValue):
-  if condition['comparison'] == ">":
-    return int(paramValue) > int(condition['comparisonValue'])
-  elif condition['comparison'] == "<":
-    return int(paramValue) < int(condition['comparisonValue'])
-  else:    
-    return paramValue == condition['comparisonValue']
-
+  cmpParamIDs = condition['cmpParamIDs']
+  cmpParamValues = []
+  for cmpParamID in cmpParamIDs:
+    param = get_table_ref('PARAMETERS').query(KeyConditionExpression=Key('uuid').eq(paramID))   
+    if param['paramType'] == "string":
+      cmpParamValues.append(param['paramvalue'])
+    elif param['paramType'] == "number":
+      cmpParamValues.append(int(param['paramvalue']))
+    elif param['paramType'] == "bool":
+      cmpParamValues.append(param['paramvalue'] in 'true')
+    else:
+      raise BadConditionException("Bad parameter type")
+  return eval(condition['expression'])
 
 def fire_action(actionID):
   print("Firing Action")
