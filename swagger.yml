@@ -642,13 +642,21 @@ definitions:
         description: Can be 'static' or 'dynamic'. Static will use comparisonValue (ie a number/string/bool) to compare the parameter. Dynamic will use comparisonParameter to compare the parameter. Value defaults to static, if this is left blank. Note that when comparing two parameters, either parameter changing will cause the condition to be re-evaluated, which could fire an action.
       comparison:
         type: string
-        description: How to compare the parameter to the comparision value (>,<,=) >,< only work with number types.
+        description: How to compare the parameter to the comparision value (>,<,=,==) >,< only work with number types.
       comparisonValue:
         type: string
         description: Value to compare the parameter to, when the comparison is a static comparison.
       comparisonParameter:
         type: string
         description: ID of the parameter to complete the comparison to. Note, that change either this parameter, or the paramID will cause the condition to be re-evaluated, which could fire an action.
+      tolerance:
+        type: string
+        description: 
+          Optional amount of tolerance you want in the comparison. For example, if set to 2 than, 
+          paramValue = comparisonValue will change to comparisonValue - 2 <= paramValue <= comparisonValue + 2, 
+          paramValue < comparisonValue will change to paramValue - 2 < comparisonValue, 
+          paramValue > comparisonValue will change to paramValue + 2 > comparisonValue.
+          Setting tolerance on a string/bool comparison will result in an error.
       actionID:
         type: string
         description: Action to fire when comparision returns true.

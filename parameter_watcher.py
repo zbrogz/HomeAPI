@@ -28,6 +28,7 @@ def find_relevant_conditions(paramID):
 def test_condition(condition,paramValue,causingParamID):
   secondValue = ""
   firstValue = ""
+  tolerance = int(condition['tolerance']) if 'tolerance' in condition else 0
   if condition['comparisonType'] == 'static':
     if not 'comparisonValue' in condition:
       raise BadConditionException("Missing comparisonValue in static condition.")
@@ -47,12 +48,15 @@ def test_condition(condition,paramValue,causingParamID):
   print("First Value = "+firstValue)
   print("Comparison:"+condition['comparison'])
   print("Second Value = "+secondValue)
+  print("Tolerance = "+str(tolerance))
   if condition['comparison'] == ">":
-    return int(firstValue) > int(secondValue)
+    return int(firstValue) > int(secondValue) + tolerance
   elif condition['comparison'] == "<":
-    return int(firstValue) < int(secondValue)
-  else:    
+    return int(firstValue) < int(secondValue) - tolerance
+  elif tolerance == 0:    
     return firstValue == secondValue
+  else:
+    return int(secondValue)-2 <= int(firstValue) and int(secondValue)+2 >= int(firstValue)
   
 
 def get_param_value(paramID):
