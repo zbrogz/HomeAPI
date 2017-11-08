@@ -208,7 +208,7 @@ paths:
             $ref: '#definitions/Error'
       x-lambda-function: devices
     post:
-      description: Updates device parameters. Only include the parameters that you want to update. Only need to include uuid and paramValue for each parameter.
+      description: Updates device parameters. Only include the parameters that you want to update. Only need to include uuid and parmValue for each parameter.
       security:
         - api_key: []
       requestBody:
@@ -600,7 +600,7 @@ definitions:
         type: string
         description: Value of the parameter. Always a string, but can be converted to bool/string by consumer. Only given when reading devise or parameter. C
           can give it when updating values. Ignored on creating and updated device. Make sure number values are a string.
-        required: false
+        rerquired: false
   Action:
     description: A action that can be fired to update device parameters.
     type: object
@@ -626,7 +626,7 @@ definitions:
         type: string
         description: The new value that should be set for the parameter.
   Condition:
-    description: A If This then That condition that fires an action. If the paramValue expression is true, it will fire the action.
+    description: A If This than That condition that fires an action. If the paramValue (compare) to comparision value is true, it will fire the action.
     properties:
       uuid: 
         type: string
@@ -637,15 +637,12 @@ definitions:
       paramID:
         type: string
         description: Parameter to watch
-      cmpParamIDs:
-        type: array
-        description: An array of parameters used for comparison in the condition expression
-        items:
-          type: string
-      expression:
+      comparison:
         type: string
-        description: An expression for comparing the parameter with other parameters or constants. Must return true or false. 
-          Ex) "paramValue + 1 > cmpParamValues[0] + cmpParamValues[1]"
+        description: How to compare the parameter to the comparision value (>,<,=) >,< only work with number types.
+      comparisonValue:
+        type: string
+        description: Value to compare the parameter to. (Can be true or false.)
       actionID:
         type: string
         description: Action to fire when comparision returns true.
