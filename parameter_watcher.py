@@ -34,7 +34,7 @@ def test_condition(condition,paramValue,causingParamID):
       raise BadConditionException("Missing comparisonValue in static condition.")
     secondValue = condition['comparisonValue']
     firstValue = paramValue
-  else:
+  elif condition['comparisonType'] == 'dynamic':
     print("Dynamic Comparison")
     if causingParamID == condition['paramID']:
       firstValue = paramValue
@@ -43,7 +43,9 @@ def test_condition(condition,paramValue,causingParamID):
       secondValue = paramValue
       firstValue = get_param_value(condition['paramID'])
     else:
-      raise BadConditionException("Condition does not include the parameter that chagned.")
+      raise BadConditionException("Condition does not include the parameter that changed.")
+  else:
+    raise BadConditionException("Invalid comparisonType. Must be 'dyanmic' or 'static'.")
   
   print("First Value = "+firstValue)
   print("Comparison:"+condition['comparison'])
@@ -53,10 +55,10 @@ def test_condition(condition,paramValue,causingParamID):
     return int(firstValue) > int(secondValue) + tolerance
   elif condition['comparison'] == "<":
     return int(firstValue) < int(secondValue) - tolerance
-  elif tolerance == 0:    
+  elif tolerance == 0:
     return firstValue == secondValue
   else:
-    return int(secondValue)-2 <= int(firstValue) and int(secondValue)+2 >= int(firstValue)
+    return int(secondValue) - tolerance <= int(firstValue) and int(firstValue) <= int(secondValue) + tolerance
   
 
 def get_param_value(paramID):
