@@ -14,7 +14,7 @@ def create_action(actionData):
     raise ParameterException(400, "Invalid Parameters: missing actionName or actionCommands")
     #Validate all commands before create
   for command in actionData['actionCommands']:
-    if not 'paramID' in command or not 'paramValue' in command:
+    if not 'paramID' in command or not 'expression' in command:
       raise ParameterException(400, "Invalid actionCommand: missing paramID or paramValue")
   
   uid = uuid().hex

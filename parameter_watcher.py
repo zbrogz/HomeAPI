@@ -20,35 +20,15 @@ def find_relevant_conditions(paramID):
 
 
 def test_condition(condition,paramValue):
-  cmpParamIDs = condition['cmpParamIDs']
-  cmpParamValues = []
-  for cmpParamID in cmpParamIDs:
-    param = get_table_ref('PARAMETERS').query(KeyConditionExpression=Key('uuid').eq(paramID))   
-    if param['paramType'] == "string":
-      cmpParamValues.append(param['paramvalue'])
-    elif param['paramType'] == "number":
-      cmpParamValues.append(int(param['paramvalue']))
-    elif param['paramType'] == "bool":
-      cmpParamValues.append(param['paramvalue'] in 'true')
-    else:
-      raise BadConditionException("Bad parameter type")
+  cmpParamValues = load_params(condition['cmpParamIDs'])
   return eval(condition['expression'])
 
 def fire_action(actionID):
   print("Firing Action")
   action = load_action(actionID)
-  update_parameters(action['actionCommands'])
-
-def update_parameters(params):
-  nowtime = datetime.now().strftime('%x-%X')
-  
-  for parameter in params:
-      params_table().update_item(
-        Key={'uuid': parameter['paramID']},
-        UpdateExpression="set paramValue = :v, updated_at = :t",
-        ExpressionAttributeValues={':v': parameter['paramValue'], ':t': nowtime}
-      )
-  
+  for actionCommand in action['actionCommands']:
+    cmpParamValues = load_params(actionCommand['cmpParamIDs'])
+    update_parameter(actionCommand['paramID'], eval(actionCommand['expression']))
 
 def load_action(actionID):
   if not actionID:
@@ -57,6 +37,31 @@ def load_action(actionID):
   if len(response['Items'])!=1:
     raise BadConditionException("Action not found")
   return response['Items'][0]
+
+def load_params(paramIDs):
+  paramValues = []
+  for paramID in paramIDs:
+    param = params_table().query(KeyConditionExpression=Key('uuid').eq(paramID))   
+    if param['paramType'] == "string":
+      paramValues.append(param['paramValue'])
+    elif param['paramType'] == "number":_
+      paramValues.append(int(param['paramValue']))
+    elif param['paramType'] == "bool":
+      paramValues.append(param['paramValue'] in 'true')
+    else:
+      raise BadConditionException("Bad parameter type")
+
+  return paramValues
+
+def update_parameter(paramID, paramValue):
+  nowtime = datetime.now().strftime('%x-%X')
+  params_table().update_item(
+        Key={'uuid': paramID},
+        UpdateExpression="set paramValue = :v, updated_at = :t",
+        ExpressionAttributeValues={':v': paramValue, ':t': nowtime}
+  )
+      
+
 
 def conditions_table():
   return get_table_ref('CONDITIONS')

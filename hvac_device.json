@@ -1,0 +1,39 @@
+{
+	"deviceName": "HVAC Controller",
+	"deviceType": "HVAC Controller",
+	"devicePath": "",
+	"parameters": [
+		{
+			"paramName": "heat",
+			"paramType": "bool",
+			"paramActions": "both",
+			"paramValue": "false"
+		},
+		{
+			"paramName": "ac",
+			"paramType": "bool",
+			"paramActions": "both",
+			"paramValue": "false"
+		},
+		{
+			"paramName": "fan",
+			"paramType": "bool",
+			"paramActions": "both",
+			"paramValue": "false"
+		},
+		{
+			"paramName": "off_time",
+			"paramType": "number",
+			"paramActions": "both",
+			"paramValue": "0"
+		},
+		{
+			"paramName": "update_period",
+			"paramType": "number",
+			"paramActions": "both",
+			"paramValue": "10"
+		}
+	]
+}
+
+

@@ -622,9 +622,9 @@ definitions:
       paramID: 
         type: string
         description: A paramID of a device that should be set to a new value.
-      paramValue:
+      expression:
         type: string
-        description: The new value that should be set for the parameter.
+        description: An expression that returns the new value for the parameter. Ex) "paramValue + 1" OR "cmpParamValues[0] - 1"
   Condition:
     description: A If This then That condition that fires an action. If the paramValue expression is true, it will fire the action.
     properties:
